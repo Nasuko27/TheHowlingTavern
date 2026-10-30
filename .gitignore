@@ -1,0 +1,20 @@
+# Identifiants (copier secrets.example.php en secrets.php)
+secrets.php
+
+# Dépendances Composer (composer install)
+vendor/
+
+# Données générées à l'exécution
+logs/*
+!logs/.gitkeep
+temp/*
+!temp/.gitkeep
+
+# OS / éditeurs
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.tmp
+*.log
