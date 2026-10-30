@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include_once __DIR__ . '/../includes/protect.php';
+include_once __DIR__ . '/../includes/protect_admin.php';
 include_once __DIR__ . '/../includes/header.php';
 include_once __DIR__ . '/../includes/config.php';
 include_once __DIR__ . '/../includes/logger.php';

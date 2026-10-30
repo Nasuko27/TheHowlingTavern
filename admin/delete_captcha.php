@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../includes/protect.php';
+include_once __DIR__ . '/../includes/protect_admin.php';
 include_once __DIR__ . '/../includes/config.php';
 
 if (!isset($_GET['chemin']) || empty($_GET['chemin'])) {

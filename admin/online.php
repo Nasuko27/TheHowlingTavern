@@ -16,7 +16,7 @@
 <?php
 include_once __DIR__ . '/../includes/logger.php';
 log_action('Administration', 'Utilisateurs connectés');
-include_once __DIR__ . '/../includes/protect.php';
+include_once __DIR__ . '/../includes/protect_admin.php';
 include_once __DIR__ . '/../includes/config.php';
 include_once __DIR__ . '/../includes/adminnav.php';
 
