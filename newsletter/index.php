@@ -1,13 +1,13 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/../includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/logger.php';
 
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
-include_once __DIR__ . '/includes/mailer.php';
+include_once __DIR__ . '/../includes/mailer.php';
 $standbys = $pdo->query(
     "SELECT * FROM NEWSLETTER WHERE statut = 'standby' AND date_soumise <= NOW() - INTERVAL 6 HOUR"
 )->fetchAll();
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_article'])) {
             )->execute([':t' => $titre, ':c' => $contenu, ':uid' => $_SESSION['id']]);
         }
     }
-    header('Location: newsletter.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_article'])) {
             }
         }
     }
-    header('Location: newsletter.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_article'])) {
     if ($aid) {
         $pdo->prepare("DELETE FROM NEWSLETTER WHERE id = :id")->execute([':id' => $aid]);
     }
-    header('Location: newsletter.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -136,30 +136,30 @@ log_action('Newsletter', 'Lecture');
 
 $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
 ?>
-<?php include __DIR__ . '/includes/header.php'; ?>
+<?php include __DIR__ . '/../includes/header.php'; ?>
 <body>
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
 <div class="forum-container">
 
     <div class="forum-header">
         <h1>Newsletter</h1>
         <?php if ($isAdmin && !$showForm && !$edit_article): ?>
-        <a href="newsletter.php?new=1" class="btn-forum-new">Nouvel article</a>
+        <a href="index.php?new=1" class="btn-forum-new">Nouvel article</a>
         <?php endif; ?>
     </div>
 
     <?php if ($showForm): ?>
     <div class="form-card">
         <h2>Nouvel article</h2>
-        <form method="POST" action="newsletter.php">
+        <form method="POST" action="index.php">
             <input type="hidden" name="new_article" value="1">
             <input type="text" name="titre" placeholder="Titre" maxlength="255" required>
             <textarea name="contenu" placeholder="Contenu&hellip;" required></textarea>
             <div class="d-flex gap-2">
                 <button type="submit" name="action" value="draft" class="btn-forum-new" style="background:#333;border-color:#555">Enregistrer</button>
                 <button type="submit" name="action" value="publish" class="btn-forum-new">Soumettre</button>
-                <a href="newsletter.php" class="btn-forum-new" style="background:#222;border-color:#444">Annuler</a>
+                <a href="index.php" class="btn-forum-new" style="background:#222;border-color:#444">Annuler</a>
             </div>
         </form>
     </div>
@@ -168,7 +168,7 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
     <?php if ($edit_article): ?>
     <div class="form-card">
         <h2>Modifier l&rsquo;article</h2>
-        <form method="POST" action="newsletter.php">
+        <form method="POST" action="index.php">
             <input type="hidden" name="edit_article" value="1">
             <input type="hidden" name="article_id" value="<?= (int)$edit_article['id'] ?>">
             <input type="text" name="titre" value="<?= htmlspecialchars($edit_article['titre']) ?>" maxlength="255" required>
@@ -180,7 +180,7 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
                 <?php else: ?>
                 <button type="submit" name="action" value="save" class="btn-forum-new">Enregistrer</button>
                 <?php endif; ?>
-                <a href="newsletter.php" class="btn-forum-new" style="background:#222;border-color:#444">Annuler</a>
+                <a href="index.php" class="btn-forum-new" style="background:#222;border-color:#444">Annuler</a>
             </div>
         </form>
     </div>
@@ -188,14 +188,14 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
 
     <?php if ($filter_id > 0): ?>
     <p style="margin-bottom:1.2rem">
-        <a href="newsletter.php" class="btn-forum-new" style="font-size:.85rem;padding:.4rem .9rem">&larr; Tous les articles</a>
+        <a href="index.php" class="btn-forum-new" style="font-size:.85rem;padding:.4rem .9rem">&larr; Tous les articles</a>
     </p>
     <?php endif; ?>
 
     <?php if (empty($articles)): ?>
     <p style="color:#888;text-align:center;margin-top:3rem">
         <?php if ($filter_id > 0): ?>
-            Cet article n&rsquo;existe plus. <a href="newsletter.php" style="color:#e8a87c">Voir tous les articles</a>.
+            Cet article n&rsquo;existe plus. <a href="index.php" style="color:#e8a87c">Voir tous les articles</a>.
         <?php else: ?>
             Aucune actualit&eacute; pour le moment.
         <?php endif; ?>
@@ -226,9 +226,9 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
                     <?php endif; ?>
                 </div>
                 <div class="nl-meta">
-                    <?php $aSrc = $a['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($a['avatar']) : 'assets/img/usrplaceholder.png'; ?>
-                    <a href="profile.php?id=<?= (int)$a['id_admin'] ?>"><img src="<?= $aSrc ?>" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.3rem"></a>
-                    Par <strong><a href="profile.php?id=<?= (int)$a['id_admin'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($a['login']) ?></a></strong>
+                    <?php $aSrc = $a['avatar'] ? '../assets/img/avatars/' . htmlspecialchars($a['avatar']) : '../assets/img/usrplaceholder.png'; ?>
+                    <a href="../compte/profil.php?id=<?= (int)$a['id_admin'] ?>"><img src="<?= $aSrc ?>" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.3rem"></a>
+                    Par <strong><a href="../compte/profil.php?id=<?= (int)$a['id_admin'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($a['login']) ?></a></strong>
                     <?php if ($a['statut'] === 'published' && $a['date_pub']): ?>
                         &middot; <?= date('d/m/Y', strtotime($a['date_pub'])) ?>
                     <?php elseif ($isStandby && $a['date_soumise']): ?>
@@ -237,7 +237,7 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
                     <?php if ($isAdmin): ?>
                     <span style="margin-left:.8rem">
                         <?php if ($canEdit): ?>
-                        <a href="newsletter.php?edit=<?= (int)$a['id'] ?>" class="btn-forum-new" style="font-size:.75rem;padding:.2rem .6rem">Modifier</a>
+                        <a href="index.php?edit=<?= (int)$a['id'] ?>" class="btn-forum-new" style="font-size:.75rem;padding:.2rem .6rem">Modifier</a>
                         <?php endif; ?>
                         <form method="POST" style="display:inline;margin-left:.4rem" onsubmit="return confirm('Supprimer cet article ?')">
                             <input type="hidden" name="delete_article" value="1">
@@ -256,4 +256,4 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
 </div>
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

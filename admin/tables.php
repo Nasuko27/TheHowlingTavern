@@ -63,7 +63,7 @@ $tables = $pdo->query(
                 <td><span class="invite-code"><?= htmlspecialchars($t['code_invite']) ?></span></td>
                 <td style="font-size:.85rem;color:#888"><?= date('d/m/Y', strtotime($t['date_creation'])) ?></td>
                 <td>
-                    <a href="../tablejeu.php?id=<?= (int)$t['id'] ?>" class="btn-edit">Voir</a>
+                    <a href="../tables/jeu.php?id=<?= (int)$t['id'] ?>" class="btn-edit">Voir</a>
                     <form method="POST" style="display:inline" onsubmit="return confirm('Supprimer cette table ?')">
                         <input type="hidden" name="delete_table" value="1">
                         <input type="hidden" name="table_id" value="<?= (int)$t['id'] ?>">

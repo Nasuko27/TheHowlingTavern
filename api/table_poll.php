@@ -33,7 +33,7 @@ $rows = $stmt->fetchAll();
 
 $messages = [];
 foreach ($rows as $r) {
-    $avSrc = $r['avatar'] ? 'assets/img/avatars/' . $r['avatar'] : 'assets/img/usrplaceholder.png';
+    $avSrc = $r['avatar'] ? '../assets/img/avatars/' . $r['avatar'] : '../assets/img/usrplaceholder.png';
     $diff  = (new DateTime())->getTimestamp() - (new DateTime($r['date_envoi']))->getTimestamp();
     if ($diff < 60)          $ago = 'a l\'instant';
     elseif ($diff < 3600)    $ago = floor($diff / 60) . ' min';

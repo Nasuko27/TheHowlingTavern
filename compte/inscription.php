@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/../includes/config.php';
 
 $sql = "SELECT chemin FROM CAPCHAT ORDER BY id ASC";
 $stmt = $pdo->query($sql);
@@ -55,7 +55,7 @@ try {
             $_SESSION['pending_email'] = $email;
 
             try {
-                include_once __DIR__ . '/includes/mailer.php';
+                include_once __DIR__ . '/../includes/mailer.php';
                 $mailResult = send_verification_mail($email, $pseudo, $code);
                 $_SESSION['mail_sent']  = ($mailResult === true);
                 $_SESSION['mail_error'] = ($mailResult === true) ? null : $mailResult;
@@ -68,7 +68,7 @@ try {
                 $_SESSION['fallback_code'] = $code;
             }
 
-            header('Location: verify_code.php');
+            header('Location: verification.php');
             exit();
         }
     }
@@ -77,19 +77,19 @@ try {
     print 'Erreur : ' . $ex->getMessage();
 }
 
-include_once __DIR__ . '/includes/header.php';
+include_once __DIR__ . '/../includes/header.php';
 
 log_action('Connexion');
 
 ?>
 <body>
 
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
-<div class="centered-popup" style="background-image: url(assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
+<div class="centered-popup" style="background-image: url(../assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
     <div class="popup p-5">
         <h1 class="display-1 text-center">Créez votre compte</h1>
-        <form action="createuser.php" method="POST" class="px-5">
+        <form action="inscription.php" method="POST" class="px-5">
             <div class="col g-3">
                 <div class="mb-3 row column-gap-4">
                     <div class="col p-0">
@@ -156,7 +156,7 @@ log_action('Connexion');
     </div>
 </div>
 
-<script src="assets/js/captcha.js"></script>
+<script src="../assets/js/captcha.js"></script>
 <script>
 document.querySelector('form').addEventListener('submit', function(e) {
     if (!document.getElementById('verifCaptcha').checked) {

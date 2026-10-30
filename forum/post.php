@@ -1,11 +1,11 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 
 $id = (int)($_GET['id'] ?? 0);
-if (!$id) { header('Location: forum.php'); exit(); }
+if (!$id) { header('Location: index.php'); exit(); }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vote'])) {
     $vote = ((int)$_POST['vote'] === 1) ? 1 : -1;
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vote'])) {
         $pdo->prepare("INSERT INTO FORUM_VOTE (post_id,user_id,vote) VALUES(:pid,:uid,:v)")
             ->execute([':pid' => $id, ':uid' => $_SESSION['id'], ':v' => $vote]);
     }
-    header("Location: forum_post.php?id=$id");
+    header("Location: post.php?id=$id");
     exit();
 }
 
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post'])) {
         $pdo->prepare("DELETE FROM MESSAGE WHERE id_filldiscussion = :pid")->execute([':pid' => $id]);
         $pdo->prepare("DELETE FROM FILLDISCUSSION WHERE id = :pid")->execute([':pid' => $id]);
     }
-    header('Location: forum.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_post'])) {
         $pdo->prepare("UPDATE FILLDISCUSSION SET nom = :nom, contenu = :contenu WHERE id = :pid")
             ->execute([':nom' => $titre, ':contenu' => $contenu, ':pid' => $id]);
     }
-    header("Location: forum_post.php?id=$id");
+    header("Location: post.php?id=$id");
     exit();
 }
 
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
             $pdo->prepare("DELETE FROM MESSAGE WHERE id = :mid")->execute([':mid' => $mid]);
         }
     }
-    header("Location: forum_post.php?id=$id");
+    header("Location: post.php?id=$id");
     exit();
 }
 
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vote_message'])) {
             }
         }
     }
-    header("Location: forum_post.php?id=$id");
+    header("Location: post.php?id=$id");
     exit();
 }
 
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_message'])) {
             "INSERT INTO MESSAGE (contenu, id_filldiscussion, id_user) VALUES (:contenu, :pid, :uid)"
         )->execute([':contenu' => $contenu, ':pid' => $id, ':uid' => $_SESSION['id']]);
     }
-    header("Location: forum_post.php?id=$id");
+    header("Location: post.php?id=$id");
     exit();
 }
 
@@ -116,7 +116,7 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute([':id' => $id]);
 $post = $stmt->fetch();
-if (!$post) { header('Location: forum.php'); exit(); }
+if (!$post) { header('Location: index.php'); exit(); }
 
 $isAdmin   = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 $canDelete = $isAdmin || $post['id_user'] == $_SESSION['id'];
@@ -172,27 +172,27 @@ function time_ago($dt = '') {
     <link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="icon" type="image/png" href="assets/img/logo.png">
-    <link href="assets/css/styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
+    <link href="../assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
 
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
 <div class="forum-container">
 
-    <a href="forum.php" class="back-link">Retour au forum</a>
+    <a href="index.php" class="back-link">Retour au forum</a>
 
     <?php if ($editMode): ?>
     <div class="form-card">
         <h2>Modifier le post</h2>
-        <form method="POST" action="forum_post.php?id=<?= $id ?>">
+        <form method="POST" action="post.php?id=<?= $id ?>">
             <input type="hidden" name="update_post" value="1">
             <input type="text" name="titre" value="<?= htmlspecialchars($post['nom']) ?>" maxlength="150" required>
             <textarea name="contenu" required><?= htmlspecialchars($post['contenu']) ?></textarea>
             <div class="d-flex gap-2">
                 <button type="submit" class="btn-forum-new">Enregistrer</button>
-                <a href="forum_post.php?id=<?= $id ?>" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
+                <a href="post.php?id=<?= $id ?>" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
             </div>
         </form>
     </div>
@@ -200,16 +200,16 @@ function time_ago($dt = '') {
     <div class="post-full">
         <div class="post-full-title"><?= htmlspecialchars($post['nom']) ?></div>
         <div class="post-meta" style="font-size:.8rem;color:#888">
-            <?php $postAvSrc = $post['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($post['avatar']) : 'assets/img/usrplaceholder.png'; ?>
-            <a href="profile.php?id=<?= (int)$post['id_user'] ?>"><img src="<?= $postAvSrc ?>" alt="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.3rem"></a>
-            Post&eacute; par <strong><a href="profile.php?id=<?= (int)$post['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($post['login']) ?></a></strong>
+            <?php $postAvSrc = $post['avatar'] ? '../assets/img/avatars/' . htmlspecialchars($post['avatar']) : '../assets/img/usrplaceholder.png'; ?>
+            <a href="../compte/profil.php?id=<?= (int)$post['id_user'] ?>"><img src="<?= $postAvSrc ?>" alt="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.3rem"></a>
+            Post&eacute; par <strong><a href="../compte/profil.php?id=<?= (int)$post['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($post['login']) ?></a></strong>
             &middot; <?= time_ago($post['datecreation']) ?>
         </div>
         <div class="post-full-content"><?= htmlspecialchars($post['contenu']) ?></div>
 
         <div class="post-actions" style="margin-top:.8rem">
             <?php if ($canEdit): ?>
-            <a href="forum_post.php?id=<?= $id ?>&edit=1" class="btn-edit">Modifier</a>
+            <a href="post.php?id=<?= $id ?>&edit=1" class="btn-edit">Modifier</a>
             <?php endif; ?>
             <?php if ($canDelete): ?>
             <form method="POST" onsubmit="return confirm('Supprimer ce post et tous ses commentaires ?')">
@@ -250,9 +250,9 @@ function time_ago($dt = '') {
             <?php foreach ($messages as $m): ?>
             <div class="comment-card">
                 <div class="comment-author">
-                    <?php $mAvSrc = $m['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($m['avatar']) : 'assets/img/usrplaceholder.png'; ?>
-                    <a href="profile.php?id=<?= (int)$m['id_user'] ?>"><img src="<?= $mAvSrc ?>" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
-                    <a href="profile.php?id=<?= (int)$m['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($m['login']) ?></a>
+                    <?php $mAvSrc = $m['avatar'] ? '../assets/img/avatars/' . htmlspecialchars($m['avatar']) : '../assets/img/usrplaceholder.png'; ?>
+                    <a href="../compte/profil.php?id=<?= (int)$m['id_user'] ?>"><img src="<?= $mAvSrc ?>" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
+                    <a href="../compte/profil.php?id=<?= (int)$m['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($m['login']) ?></a>
                     <span style="color:#666;font-weight:normal"> . <?= time_ago($m['dateposte']) ?></span>
                     <form method="POST" style="display:inline;margin-left:.5rem">
                         <input type="hidden" name="vote_message" value="1">
@@ -279,4 +279,4 @@ function time_ago($dt = '') {
 
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

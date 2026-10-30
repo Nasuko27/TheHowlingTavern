@@ -5,7 +5,13 @@ Site communautaire de jeu de rôle (PHP / MySQL) : fiches de personnage, tables 
 ## Structure
 
 ```
-/            pages du site (index, login, forum, fiche, tables, ...)
+index.php    page d'accueil
+compte/      connexion, inscription, vérification, profil
+fiches/      fiches de personnage (création, édition, export PDF)
+tables/      tables de jeu et chat de partie
+forum/       forum et conversations
+newsletter/  articles et redirection depuis les mails
+pages/       tickets et mentions légales
 admin/       back-office (dashboard, utilisateurs, logs, captchas, données des systèmes)
 api/         endpoints appelés en AJAX (polling, recherche, filtres, données de fiche)
 includes/    fichiers inclus : config, secrets, protections, logger, mailer, header, nav, footer

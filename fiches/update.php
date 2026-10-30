@@ -1,10 +1,10 @@
 <?php
 ob_start();
-include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/../includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (!isset($_SESSION['id']) || $_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['save_fiche'])) {
-    header('Location: tables.php');
+    header('Location: ../tables/index.php');
     exit();
 }
 
@@ -13,12 +13,12 @@ $fdpId = (int)($_POST['id_fdp'] ?? 0);
 $tableId = (int)($_POST['id_table'] ?? 0);
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
-if (!$fdpId) { header('Location: tables.php'); exit(); }
+if (!$fdpId) { header('Location: ../tables/index.php'); exit(); }
 
 $stmt = $pdo->prepare("SELECT id_user FROM FDP WHERE id = :fdp");
 $stmt->execute([':fdp' => $fdpId]);
 $owner = $stmt->fetch();
-if (!$owner) { header('Location: tables.php'); exit(); }
+if (!$owner) { header('Location: ../tables/index.php'); exit(); }
 
 $isOwner = (int)$owner['id_user'] === $uid;
 $isMJ = false;
@@ -30,7 +30,7 @@ if ($tableId) {
 }
 
 if (!$isOwner && !$isMJ && !$isAdmin) {
-    header('Location: tables.php');
+    header('Location: ../tables/index.php');
     exit();
 }
 
@@ -52,7 +52,7 @@ foreach ($caracs->fetchAll() as $c) {
 }
 
 if ($tableId) {
-    header('Location: tablejeu.php?id=' . $tableId);
+    header('Location: ../tables/jeu.php?id=' . $tableId);
 } else {
     header('Location: fiche.php?id=' . $fdpId);
 }

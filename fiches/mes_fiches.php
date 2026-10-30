@@ -1,10 +1,10 @@
 <?php
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 log_action('Mes fiches');
 
-include __DIR__ . '/includes/header.php';
-include __DIR__ . '/includes/nav.php';
+include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/nav.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_fiche'])) {
     $fdpId = (int)($_POST['id_fdp'] ?? 0);
@@ -47,7 +47,7 @@ $fiches = $stmt->fetchAll();
     <?php if (empty($fiches)): ?>
         <p style="color:#888;text-align:center;padding:2rem">Tu n'as aucune fiche pour le moment.</p>
         <div style="text-align:center">
-            <a href="systemeFiche.php" class="btn-forum-new">Cr&eacute;er une fiche</a>
+            <a href="systemes.php" class="btn-forum-new">Cr&eacute;er une fiche</a>
         </div>
     <?php else: ?>
         <?php foreach ($fiches as $f): ?>
@@ -80,7 +80,7 @@ $fiches = $stmt->fetchAll();
         </div>
         <?php endforeach; ?>
         <div style="text-align:center;margin-top:1.5rem">
-            <a href="systemeFiche.php" class="btn-forum-new">Cr&eacute;er une nouvelle fiche</a>
+            <a href="systemes.php" class="btn-forum-new">Cr&eacute;er une nouvelle fiche</a>
         </div>
     <?php endif; ?>
 
@@ -88,4 +88,4 @@ $fiches = $stmt->fetchAll();
 
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

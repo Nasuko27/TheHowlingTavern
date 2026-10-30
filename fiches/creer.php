@@ -1,14 +1,14 @@
 <?php
 
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 log_action('Création FDP');
 
-include __DIR__ . '/includes/header.php';
-include __DIR__ . '/includes/nav.php';
+include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/nav.php';
 
 if (!isset($_GET['systeme'])) {
-    header('location: systemeFiche.php');
+    header('location: systemes.php');
     die();
 } else {
     $systeme = $_GET['systeme'];
@@ -33,10 +33,10 @@ $stmt->execute();
 $classes = $stmt->fetchAll();
 
 ?>
-<script src="assets/js/functions.js"></script>
+<script src="../assets/js/functions.js"></script>
 <body class="container-fluid">
 <form class="comphero d-flex flex-column align-items-center gap-5 p-4 m-4" method="post"
-      action="laFinaliteDeTouteUneVie.php">
+      action="enregistrer.php">
     <label for="nom" style="font-size: x-large">Nom du personnage :</label>
     <input type="text" required id="nom" name="nom">
 

@@ -5,7 +5,7 @@ function cutImage(nom) {
     const col = randomInt(5) + 3;
     nom = nom[randomInt(nom.length)]['chemin'];
     const img = new Image();
-    img.src = "assets/img/captcha/" + nom.toString();
+    img.src = "../assets/img/captcha/" + nom.toString();
     let random = randomInt(row * col);
 
     const larg = 150 / col;

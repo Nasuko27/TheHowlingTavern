@@ -1,10 +1,10 @@
 <?php
 ob_start();
-include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/../includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (!isset($_SESSION['id']) || !isset($_SESSION['status']) || (int)$_SESSION['status'] !== 2) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -27,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['envoyer_message'])) {
     exit();
 }
 
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <body>
-<div class="centered-popup" style="background-image: url(assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
+<div class="centered-popup" style="background-image: url(../assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
     <div class="popup p-5" style="max-width:600px;width:90%">
         <h1 style="text-align:center;color:#c0392b;font-size:2rem">Compte banni</h1>
         <p style="text-align:center;color:#aaa;font-family:'Texturina',serif;margin-bottom:1.5rem">

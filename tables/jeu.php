@@ -1,23 +1,23 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
 $id = (int)($_GET['id'] ?? 0);
-if (!$id) { header('Location: tables.php'); exit(); }
+if (!$id) { header('Location: index.php'); exit(); }
 
 $stmt = $pdo->prepare("SELECT t.id, t.nom, t.code_invite, t.id_maitrejeu, t.id_systeme, u.login AS mj_login FROM TABLEDEJEU t JOIN USER u ON u.id = t.id_maitrejeu WHERE t.id = :id");
 $stmt->execute([':id' => $id]);
 $table = $stmt->fetch();
-if (!$table) { header('Location: tables.php'); exit(); }
+if (!$table) { header('Location: index.php'); exit(); }
 
 $stmt = $pdo->prepare("SELECT 1 FROM TABLE_MEMBRE WHERE id_table = :tid AND id_user = :uid");
 $stmt->execute([':tid' => $id, ':uid' => $_SESSION['id']]);
 $isMember = (bool)$stmt->fetch();
-if (!$isMember && !$isAdmin) { header('Location: tables.php'); exit(); }
+if (!$isMember && !$isAdmin) { header('Location: index.php'); exit(); }
 
 $isMJ = (int)$table['id_maitrejeu'] === (int)$_SESSION['id'];
 
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_table'])) {
             ->execute([':tid' => $id, ':uid' => $_SESSION['id']]);
         log_action('Tables', 'Quitte #' . $id);
     }
-    header('Location: tables.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -38,14 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['kick_member']) && ($i
             ->execute([':tid' => $id, ':uid' => $kickId]);
         log_action('Tables', 'Kick #' . $kickId . ' de table #' . $id);
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unchoose_fiche'])) {
     $pdo->prepare("DELETE FROM joueur WHERE id_table = :tid AND id_fdp IN (SELECT id FROM FDP WHERE id_user = :uid)")
         ->execute([':tid' => $id, ':uid' => $_SESSION['id']]);
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['choose_fiche'])) {
             }
         }
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_arme']) && $isMJ)
         $pdo->prepare("INSERT INTO inv_arme (id_fdp, id_arme, quantite) VALUES (:fdp, :arme, 1)")
             ->execute([':fdp' => $fdpId, ':arme' => $armeId]);
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_arme']) && $is
         $pdo->prepare("DELETE FROM inv_arme WHERE id_fdp = :fdp AND id_arme = :arme LIMIT 1")
             ->execute([':fdp' => $fdpId, ':arme' => $armeId]);
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_armure']) && $isM
         $pdo->prepare("INSERT INTO inv_armure (id_fdp, id_armure, quantite) VALUES (:fdp, :armure, 1)")
             ->execute([':fdp' => $fdpId, ':armure' => $armureId]);
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_armure']) && $
         $pdo->prepare("DELETE FROM inv_armure WHERE id_fdp = :fdp AND id_armure = :armure LIMIT 1")
             ->execute([':fdp' => $fdpId, ':armure' => $armureId]);
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_fiche'])) {
             log_action('Tables', 'Suppression fiche #' . $fdpId);
         }
     }
-    header('Location: tablejeu.php?id=' . $id);
+    header('Location: jeu.php?id=' . $id);
     exit();
 }
 
@@ -273,9 +273,9 @@ function time_ago_table($dt) {
 
 log_action('Tables', 'Vue #' . $id);
 ?>
-<?php include __DIR__ . '/includes/header.php'; ?>
+<?php include __DIR__ . '/../includes/header.php'; ?>
 <body>
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
 <div class="table-container">
 
@@ -298,7 +298,7 @@ log_action('Tables', 'Vue #' . $id);
                 <button type="submit" class="btn-delete">Quitter</button>
             </form>
             <?php endif; ?>
-            <a href="tables.php" class="btn-forum-new" style="font-size:.8rem;padding:.3rem .8rem;background:#333;border-color:#555">&larr; Retour</a>
+            <a href="index.php" class="btn-forum-new" style="font-size:.8rem;padding:.3rem .8rem;background:#333;border-color:#555">&larr; Retour</a>
         </div>
     </div>
 
@@ -308,13 +308,13 @@ log_action('Tables', 'Vue #' . $id);
             <div class="form-card">
                 <h2 style="font-size:1.1rem">Membres</h2>
                 <?php foreach ($members as $m): ?>
-                <?php $mAvSrc = $m['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($m['avatar']) : 'assets/img/usrplaceholder.png'; ?>
+                <?php $mAvSrc = $m['avatar'] ? '../assets/img/avatars/' . htmlspecialchars($m['avatar']) : '../assets/img/usrplaceholder.png'; ?>
                 <div class="member-card">
-                    <a href="profile.php?id=<?= (int)$m['id'] ?>">
+                    <a href="../compte/profil.php?id=<?= (int)$m['id'] ?>">
                         <img src="<?= $mAvSrc ?>" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
                     </a>
                     <div style="flex:1">
-                        <a href="profile.php?id=<?= (int)$m['id'] ?>" style="color:#e8a87c;text-decoration:none;font-size:.85rem"><?= htmlspecialchars($m['login']) ?></a>
+                        <a href="../compte/profil.php?id=<?= (int)$m['id'] ?>" style="color:#e8a87c;text-decoration:none;font-size:.85rem"><?= htmlspecialchars($m['login']) ?></a>
                         <?php if ($m['role'] === 'mj'): ?>
                             <span style="font-size:.6rem;background:#620D14;color:#fff;padding:1px 5px;border-radius:3px;margin-left:.3rem">MJ</span>
                         <?php endif; ?>
@@ -349,12 +349,12 @@ log_action('Tables', 'Vue #' . $id);
             <?php if (!empty($fichesToShow)): ?>
             <?php foreach ($fichesToShow as $f):
                 $canEdit = $isMJ;
-                $portrait = 'assets/img/usrplaceholder.png';
-                if (file_exists(__DIR__ . '/assets/img/fiches/' . $f['id'] . '.jpg')) $portrait = 'assets/img/fiches/' . $f['id'] . '.jpg';
-                elseif (file_exists(__DIR__ . '/assets/img/fiches/' . $f['id'] . '.png')) $portrait = 'assets/img/fiches/' . $f['id'] . '.png';
+                $portrait = '../assets/img/usrplaceholder.png';
+                if (file_exists(__DIR__ . '/../assets/img/fiches/' . $f['id'] . '.jpg')) $portrait = '../assets/img/fiches/' . $f['id'] . '.jpg';
+                elseif (file_exists(__DIR__ . '/../assets/img/fiches/' . $f['id'] . '.png')) $portrait = '../assets/img/fiches/' . $f['id'] . '.png';
                 $fmtMod = function($v) { return ($v >= 0 ? '+' : '') . $v; };
             ?>
-            <form method="POST" action="fiche_update.php" class="fiche-sheet" style="margin-bottom:1rem">
+            <form method="POST" action="../fiches/update.php" class="fiche-sheet" style="margin-bottom:1rem">
                 <input type="hidden" name="save_fiche" value="1">
                 <input type="hidden" name="id_fdp" value="<?= (int)$f['id'] ?>">
                 <input type="hidden" name="id_table" value="<?= (int)$id ?>">
@@ -521,11 +521,11 @@ log_action('Tables', 'Vue #' . $id);
                 </form>
                 <?php endforeach; ?>
                 <div style="margin-top:1rem">
-                    <a href="systemeFiche.php" class="back-link">Ou cr&eacute;er une nouvelle fiche</a>
+                    <a href="../fiches/systemes.php" class="back-link">Ou cr&eacute;er une nouvelle fiche</a>
                 </div>
                 <?php else: ?>
                 <p style="color:#888;font-size:.9rem">Tu n'as aucune fiche. Cr&eacute;e-en une d'abord !</p>
-                <a href="systemeFiche.php" class="btn-forum-new">Cr&eacute;er ma fiche</a>
+                <a href="../fiches/systemes.php" class="btn-forum-new">Cr&eacute;er ma fiche</a>
                 <?php endif; ?>
             </div>
             <?php endif; ?>
@@ -535,11 +535,11 @@ log_action('Tables', 'Vue #' . $id);
             <div class="form-card" style="padding:0;display:flex;flex-direction:column">
                 <div id="chat-box" style="height:500px;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.4rem">
                     <?php foreach ($messages as $m): ?>
-                    <?php $cAvSrc = $m['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($m['avatar']) : 'assets/img/usrplaceholder.png'; ?>
+                    <?php $cAvSrc = $m['avatar'] ? '../assets/img/avatars/' . htmlspecialchars($m['avatar']) : '../assets/img/usrplaceholder.png'; ?>
                     <div class="comment-card" style="margin-bottom:0" data-msg-id="<?= (int)$m['id'] ?>">
                         <div class="comment-author">
                             <img src="<?= $cAvSrc ?>" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem">
-                            <a href="profile.php?id=<?= (int)$m['uid'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($m['login']) ?></a>
+                            <a href="../compte/profil.php?id=<?= (int)$m['uid'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($m['login']) ?></a>
                             <span style="color:#666;font-weight:normal"> &middot; <?= time_ago_table($m['date_envoi']) ?></span>
                         </div>
                         <div class="comment-text"><?= htmlspecialchars($m['contenu']) ?></div>
@@ -575,7 +575,7 @@ chatForm.addEventListener('submit', function(e) {
     var msg = chatInput.value.trim();
     if (!msg) return;
     chatInput.value = '';
-    fetch('api/table_send.php', {
+    fetch('../api/table_send.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'id_table=' + tableId + '&contenu=' + encodeURIComponent(msg)
@@ -587,9 +587,9 @@ chatForm.addEventListener('submit', function(e) {
 function pollChat() {
     var visible = [];
     chatBox.querySelectorAll('[data-msg-id]').forEach(function(el) { visible.push(el.dataset.msgId); });
-    fetch('api/table_poll.php?id_table=' + tableId + '&after=' + lastMsgId + '&visible=' + visible.join(','))
+    fetch('../api/table_poll.php?id_table=' + tableId + '&after=' + lastMsgId + '&visible=' + visible.join(','))
         .then(function(r) {
-            if (r.status === 401) { window.location = 'login.php'; return; }
+            if (r.status === 401) { window.location = '../compte/login.php'; return; }
             return r.json();
         })
         .then(function(data) {
@@ -612,7 +612,7 @@ function pollChat() {
                 div.innerHTML =
                     '<div class="comment-author">' +
                         '<img src="' + m.avatar + '" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem">' +
-                        '<a href="profile.php?id=' + m.uid + '" style="color:#e8a87c;text-decoration:none">' + m.login + '</a>' +
+                        '<a href="../compte/profil.php?id=' + m.uid + '" style="color:#e8a87c;text-decoration:none">' + m.login + '</a>' +
                         '<span style="color:#666;font-weight:normal"> &middot; ' + m.time_ago + '</span>' +
                     '</div>' +
                     '<div class="comment-text">' + m.contenu + '</div>' + delBtn;
@@ -628,7 +628,7 @@ var myUid = <?= (int)$_SESSION['id'] ?>;
 
 function deleteMsg(msgId, btn) {
     if (!confirm('Supprimer ce message ?')) return;
-    fetch('api/table_delete_msg.php', {
+    fetch('../api/table_delete_msg.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'id_msg=' + msgId
@@ -650,4 +650,4 @@ setInterval(function() {
 </script>
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

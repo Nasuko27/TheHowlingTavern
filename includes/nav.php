@@ -13,8 +13,8 @@
                 <div class="dropdown">
                     <button class="dropbtn">Fiches</button>
                     <div class="dropdown-content">
-                        <a href="<?= BASE ?>mes_fiches.php" class="link-light link-underline-opacity-0">Mes fiches</a>
-                        <a href="<?= BASE ?>systemeFiche.php" class="link-light link-underline-opacity-0">Créer sa fiche</a>
+                        <a href="<?= BASE ?>fiches/mes_fiches.php" class="link-light link-underline-opacity-0">Mes fiches</a>
+                        <a href="<?= BASE ?>fiches/systemes.php" class="link-light link-underline-opacity-0">Créer sa fiche</a>
                     </div>
                 </div>
             </li>
@@ -22,9 +22,9 @@
                 <div class="dropdown">
                     <button class="dropbtn">Tables</button>
                     <div class="dropdown-content">
-                        <a href="<?= BASE ?>tables.php" class="link-light link-underline-opacity-0">Mes tables</a>
-                        <a href="<?= BASE ?>tables.php?join=1" class="link-light link-underline-opacity-0">Rejoindre une table</a>
-                        <a href="<?= BASE ?>tables.php?new=1" class="link-light link-underline-opacity-0">Cr&eacute;er une table</a>
+                        <a href="<?= BASE ?>tables/index.php" class="link-light link-underline-opacity-0">Mes tables</a>
+                        <a href="<?= BASE ?>tables/index.php?join=1" class="link-light link-underline-opacity-0">Rejoindre une table</a>
+                        <a href="<?= BASE ?>tables/index.php?new=1" class="link-light link-underline-opacity-0">Cr&eacute;er une table</a>
                     </div>
                 </div>
             </li>
@@ -32,7 +32,7 @@
                 <div class="dropdown">
                     <button class="dropbtn">Actualités</button>
                     <div class="dropdown-content">
-                        <a href="<?= BASE ?>newsletter.php" class="link-light link-underline-opacity-0">Newsletter</a>
+                        <a href="<?= BASE ?>newsletter/index.php" class="link-light link-underline-opacity-0">Newsletter</a>
                     </div>
                 </div>
             </li>
@@ -40,8 +40,8 @@
                 <div class="dropdown">
                     <button class="dropbtn">Forum</button>
                     <div class="dropdown-content">
-                        <a href="<?= BASE ?>forum.php" class="link-light link-underline-opacity-0">La Taverne</a>
-                        <a href="<?= BASE ?>mes_conversations.php" class="link-light link-underline-opacity-0">Mes conversations</a>
+                        <a href="<?= BASE ?>forum/index.php" class="link-light link-underline-opacity-0">La Taverne</a>
+                        <a href="<?= BASE ?>forum/conversations.php" class="link-light link-underline-opacity-0">Mes conversations</a>
                     </div>
                 </div>
             </li>
@@ -54,9 +54,9 @@
                 if(isset($_SESSION['status']) && (string)$_SESSION['status'] === '1') {
                     echo "<a href='" . BASE . "admin/index.php' class='btn btn-outline-warning btn-sm'>Admin</a>";
                 }
-                echo "<a href='" . BASE . "logout.php' class='btn btn-outline-danger btn-sm'>Déconnexion</a>";
+                echo "<a href='" . BASE . "compte/logout.php' class='btn btn-outline-danger btn-sm'>Déconnexion</a>";
             } else {
-                echo "<a href='" . BASE . "login.php'><button class='btn btn-primary'>Se connecter / Créer un compte</button></a>";
+                echo "<a href='" . BASE . "compte/login.php'><button class='btn btn-primary'>Se connecter / Créer un compte</button></a>";
             }
         ?>
         <?php
@@ -66,7 +66,7 @@
                 elseif (file_exists(dirname(__DIR__) . '/assets/img/avatars/' . $_SESSION['id'] . '.png')) $navAv = BASE . 'assets/img/avatars/' . $_SESSION['id'] . '.png';
             }
         ?>
-        <a href="<?= isset($_SESSION['id']) ? BASE . 'profile.php' : BASE . 'login.php' ?>"><img src="<?= $navAv ?>" alt="" height="80" style="border-radius:50%;object-fit:cover;width:80px"/></a>
+        <a href="<?= isset($_SESSION['id']) ? BASE . 'compte/profil.php' : BASE . 'compte/login.php' ?>"><img src="<?= $navAv ?>" alt="" height="80" style="border-radius:50%;object-fit:cover;width:80px"/></a>
     </div>
     <?php endif; ?>
 </nav>

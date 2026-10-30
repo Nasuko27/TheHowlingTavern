@@ -37,7 +37,7 @@ include __DIR__ . '/includes/nav.php';
             A toi de créer celui que tu veux être. 
             Créer ton propre personnage en puisant dans le système de jeu de ton choix.</h3>
         <div class="d-flex flex-row-reverse">
-            <a href="createfdp.php" class="link-light link-underline-opacity-0 link-underline-opacity-0-hover">
+            <a href="fiches/creer.php" class="link-light link-underline-opacity-0 link-underline-opacity-0-hover">
                 <div class="d-flex px-3 py-2 align-items-center" style="background-color: #620D14; border-radius: 25px">
                     <h2 class="m-0">Créer sa fiche</h2>
                 </div>
@@ -77,7 +77,7 @@ include __DIR__ . '/includes/nav.php';
             Viens donc voir ce qu'il s'en dis sur notre forum, que ce soit pour trouver des gens pour une nouvelle campagne, 
             proposer des systèmes de jeu ou voir les meilleurs cartes de la communauté.</h3>
         <div class="d-flex flex-row-reverse">
-            <a href="forum.php" class="link-light link-underline-opacity-0 link-underline-opacity-0-hover">
+            <a href="forum/index.php" class="link-light link-underline-opacity-0 link-underline-opacity-0-hover">
                 <div class="d-flex px-3 py-2 align-items-center" style="background-color: #620D14; border-radius: 25px">
                     <h2 class="m-0">Vers le forum</h2>
                 </div>
@@ -92,7 +92,7 @@ include __DIR__ . '/includes/nav.php';
         <h3 class="text-light">Tu te sens limité dans tes possibilités ? Envie de plus de tables de jeux, 
             de fiches de personnages et de systèmes de jeu ? Deviens membre premium et accède à pleins de nouvelles possibilités.</h3>
         <div class="d-flex flex-row-reverse">
-            <a href="login.php" class="link-light link-underline-opacity-0 link-underline-opacity-0-hover">
+            <a href="compte/login.php" class="link-light link-underline-opacity-0 link-underline-opacity-0-hover">
                 <div class="d-flex px-3 py-2 align-items-center" style="background-color: #620D14; border-radius: 25px">
                     <h2 class="m-0">Devenir membre</h2>
                 </div>

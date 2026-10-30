@@ -1,39 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_post'])) {
-    $titre   = trim($_POST['titre']   ?? '');
-    $contenu = trim($_POST['contenu'] ?? '');
-    if ($titre !== '' && $contenu !== '') {
-        $stmt = $pdo->prepare(
-            "INSERT INTO FILLDISCUSSION (nom, contenu, datecreation, id_user)
-             VALUES (:nom, :contenu, NOW(), :uid)"
-        );
-        $stmt->execute([':nom' => $titre, ':contenu' => $contenu, ':uid' => $_SESSION['id']]);
-    }
-    header('Location: forum.php');
-    exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post'])) {
-    $pid = (int)($_POST['post_id'] ?? 0);
-    if ($pid) {
-        $stmt = $pdo->prepare("SELECT id_user FROM FILLDISCUSSION WHERE id = :pid");
-        $stmt->execute([':pid' => $pid]);
-        $target = $stmt->fetch();
-        $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
-        if ($target && ($target['id_user'] == $_SESSION['id'] || $isAdmin)) {
-            $pdo->prepare("DELETE FROM FORUM_VOTE WHERE post_id = :pid")->execute([':pid' => $pid]);
-            $pdo->prepare("DELETE FROM MESSAGE WHERE id_filldiscussion = :pid")->execute([':pid' => $pid]);
-            $pdo->prepare("DELETE FROM FILLDISCUSSION WHERE id = :pid")->execute([':pid' => $pid]);
-        }
-    }
-    header('Location: forum.php');
-    exit();
-}
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vote'])) {
     $pid  = (int)($_POST['post_id'] ?? 0);
@@ -55,13 +24,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vote'])) {
         $pdo->prepare("INSERT INTO FORUM_VOTE (post_id,user_id,vote) VALUES(:pid,:uid,:v)")
             ->execute([':pid' => $pid, ':uid' => $_SESSION['id'], ':v' => $vote]);
     }
-    header('Location: forum.php');
+    header('Location: conversations.php');
     exit();
 }
 
-$posts = $pdo->query(
-    "SELECT fd.id, fd.id_user, fd.nom, fd.datecreation, u.login, u.avatar,
-            COALESCE(v.score, 0)       AS score,
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post'])) {
+    $pid = (int)($_POST['post_id'] ?? 0);
+    if ($pid) {
+        $stmt = $pdo->prepare("SELECT id_user FROM FILLDISCUSSION WHERE id = :pid");
+        $stmt->execute([':pid' => $pid]);
+        $target = $stmt->fetch();
+        $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
+        if ($target && ($target['id_user'] == $_SESSION['id'] || $isAdmin)) {
+            $pdo->prepare("DELETE FROM FORUM_VOTE WHERE post_id = :pid")->execute([':pid' => $pid]);
+            $pdo->prepare("DELETE FROM MESSAGE WHERE id_filldiscussion = :pid")->execute([':pid' => $pid]);
+            $pdo->prepare("DELETE FROM FILLDISCUSSION WHERE id = :pid")->execute([':pid' => $pid]);
+        }
+    }
+    header('Location: conversations.php');
+    exit();
+}
+
+$stmt = $pdo->prepare(
+    "SELECT fd.id, fd.id_user, fd.nom, fd.datecreation, u.login,
+            COALESCE(v.score, 0)        AS score,
             COALESCE(mc.nb_messages, 0) AS nb_messages
      FROM FILLDISCUSSION fd
      JOIN USER u ON fd.id_user = u.id
@@ -75,8 +61,15 @@ $posts = $pdo->query(
          FROM MESSAGE
          GROUP BY id_filldiscussion
      ) mc ON mc.id_filldiscussion = fd.id
-     ORDER BY score DESC, fd.datecreation DESC"
-)->fetchAll();
+     WHERE fd.id IN (
+         SELECT id                FROM FILLDISCUSSION WHERE id_user = :uid
+         UNION
+         SELECT id_filldiscussion FROM MESSAGE          WHERE id_user = :uid2
+     )
+     ORDER BY fd.datecreation DESC"
+);
+$stmt->execute([':uid' => $_SESSION['id'], ':uid2' => $_SESSION['id']]);
+$posts = $stmt->fetchAll();
 
 $myVotes = [];
 if ($posts) {
@@ -88,7 +81,7 @@ if ($posts) {
     foreach ($rows as $r) $myVotes[$r['post_id']] = (int)$r['vote'];
 }
 
-log_action('Forum', 'Liste discussions');
+log_action('Forum', 'Mes conversations');
 
 function time_ago($dt = '') {
     $past = new DateTime($dt, new DateTimeZone('UTC'));
@@ -99,51 +92,34 @@ function time_ago($dt = '') {
     if ($diff < 604800) return floor($diff / 86400) . 'j';
     return date('d/m/Y', $past->getTimestamp());
 }
-
-$showForm = isset($_GET['new']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <title>Forum &ndash; The Howling Tavern</title>
+    <title>Mes conversations &ndash; The Howling Tavern</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="icon" type="image/png" href="assets/img/logo.png">
-    <link href="assets/css/styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
+    <link href="../assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
 
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
 <div class="forum-container">
 
     <div class="forum-header">
-        <h1>La Taverne &mdash; Forum</h1>
-        <a href="forum.php?new=1" class="btn-forum-new">Nouveau post</a>
+        <h1>Mes conversations</h1>
+        <a href="index.php" class="btn-forum-new">Voir le forum</a>
     </div>
-
-    <?php if ($showForm): ?>
-    <div class="form-card">
-        <h2>Cr&eacute;er une discussion</h2>
-        <form method="POST" action="forum.php">
-            <input type="hidden" name="new_post" value="1">
-            <input type="text" name="titre" placeholder="Titre" maxlength="150" required>
-            <textarea name="contenu" placeholder="&Eacute;cris ton message&hellip;" required></textarea>
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn-forum-new">Poster</button>
-                <a href="forum.php" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
-            </div>
-        </form>
-    </div>
-    <?php endif; ?>
 
     <?php if (empty($posts)): ?>
-        <p style="color:#888;text-align:center;margin-top:3rem">Aucune discussion pour l'instant. Sois le premier !</p>
+        <p style="color:#888;text-align:center;margin-top:3rem">Tu n'as pas encore particip&eacute; &agrave; une discussion.</p>
     <?php else: ?>
         <?php foreach ($posts as $p): ?>
         <?php
@@ -153,40 +129,42 @@ $showForm = isset($_GET['new']);
             $isAdmin   = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
             $canDelete = $isAdmin || $p['id_user'] == $_SESSION['id'];
             $canEdit   = $p['id_user'] == $_SESSION['id'];
+            $isAuthor  = $p['id_user'] == $_SESSION['id'];
         ?>
         <div class="post-card">
             <div class="vote-col">
-                <form method="POST" action="forum.php">
+                <form method="POST" action="conversations.php">
                     <input type="hidden" name="vote" value="1">
                     <input type="hidden" name="post_id" value="<?= (int)$p['id'] ?>">
                     <button type="submit" class="vote-btn <?= $upClass ?>">up</button>
                 </form>
                 <span class="vote-score"><?= (int)$p['score'] ?></span>
-                <form method="POST" action="forum.php">
+                <form method="POST" action="conversations.php">
                     <input type="hidden" name="vote" value="-1">
                     <input type="hidden" name="post_id" value="<?= (int)$p['id'] ?>">
                     <button type="submit" class="vote-btn <?= $downClass ?>">dwn</button>
                 </form>
             </div>
             <div class="post-body">
-                <a href="forum_post.php?id=<?= (int)$p['id'] ?>" class="post-title">
+                <a href="post.php?id=<?= (int)$p['id'] ?>" class="post-title">
                     <?= htmlspecialchars($p['nom']) ?>
                 </a>
                 <div class="post-meta">
-                    <?php $pAvSrc = $p['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($p['avatar']) : 'assets/img/usrplaceholder.png'; ?>
-                    <a href="profile.php?id=<?= (int)$p['id_user'] ?>"><img src="<?= $pAvSrc ?>" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
-                    Post&eacute; par <strong><a href="profile.php?id=<?= (int)$p['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($p['login']) ?></a></strong>
+                    <?php if ($isAuthor): ?>
+                    <span style="color:#c9a84c;font-size:.75rem">Auteur</span> &middot;
+                    <?php endif; ?>
+                    Post&eacute; par <strong style="color:#e8a87c"><?= htmlspecialchars($p['login']) ?></strong>
                     &middot; <?= time_ago($p['datecreation']) ?>
                 </div>
                 <div class="post-actions">
-                    <a href="forum_post.php?id=<?= (int)$p['id'] ?>" class="post-comments">
+                    <a href="post.php?id=<?= (int)$p['id'] ?>" class="post-comments">
                         <?= (int)$p['nb_messages'] ?> r&eacute;ponse<?= $p['nb_messages'] != 1 ? 's' : '' ?>
                     </a>
                     <?php if ($canEdit): ?>
-                    <a href="forum_post.php?id=<?= (int)$p['id'] ?>&edit=1" class="btn-edit">Modifier</a>
+                    <a href="post.php?id=<?= (int)$p['id'] ?>&edit=1" class="btn-edit">Modifier</a>
                     <?php endif; ?>
                     <?php if ($canDelete): ?>
-                    <form method="POST" action="forum.php" onsubmit="return confirm('Supprimer ce post ?')">
+                    <form method="POST" action="conversations.php" onsubmit="return confirm('Supprimer ce post ?')">
                         <input type="hidden" name="delete_post" value="1">
                         <input type="hidden" name="post_id" value="<?= (int)$p['id'] ?>">
                         <button type="submit" class="btn-delete">Supprimer</button>
@@ -201,4 +179,4 @@ $showForm = isset($_GET['new']);
 </div>
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

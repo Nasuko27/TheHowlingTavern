@@ -183,14 +183,14 @@ if (file_exists($logFile)) {
 
     <?php if (!empty($pendingNewsletters)): ?>
     <div class="dash-section" style="border-left: 3px solid #c0392b;">
-        <h2>Newsletters en attente d'envoi <a href="../newsletter.php">G&eacute;rer</a></h2>
+        <h2>Newsletters en attente d'envoi <a href="../newsletter/index.php">G&eacute;rer</a></h2>
         <?php foreach ($pendingNewsletters as $nl): ?>
         <div class="nl-pending">
             <div>
                 <div class="nl-p-title"><?= htmlspecialchars($nl['titre']) ?></div>
                 <div class="nl-p-meta">par <?= htmlspecialchars($nl['admin_login'] ?? '?') ?> &middot; soumise le <?= date('d/m/Y H:i', strtotime($nl['date_soumise'])) ?></div>
             </div>
-            <a href="../newsletter.php" class="btn btn-sm" style="background:#620D14;color:#fff;border:1px solid #8b1a1a;font-family:'New Rocker',system-ui;font-size:.8rem">Voir</a>
+            <a href="../newsletter/index.php" class="btn btn-sm" style="background:#620D14;color:#fff;border:1px solid #8b1a1a;font-family:'New Rocker',system-ui;font-size:.8rem">Voir</a>
         </div>
         <?php endforeach; ?>
     </div>
@@ -313,8 +313,8 @@ if (file_exists($logFile)) {
             <a href="listuser.php" class="quick-link"><span class="ql-icon">&#9884;</span> Utilisateurs</a>
             <a href="listadmin.php" class="quick-link"><span class="ql-icon">&#9733;</span> Administrateurs</a>
             <a href="cofulldata.php" class="quick-link"><span class="ql-icon">&#128220;</span> CO Fantasy</a>
-            <a href="../newsletter.php" class="quick-link"><span class="ql-icon">&#9993;</span> Newsletters</a>
-            <a href="../forum.php" class="quick-link"><span class="ql-icon">&#9881;</span> Forum</a>
+            <a href="../newsletter/index.php" class="quick-link"><span class="ql-icon">&#9993;</span> Newsletters</a>
+            <a href="../forum/index.php" class="quick-link"><span class="ql-icon">&#9881;</span> Forum</a>
             <a href="captcha.php" class="quick-link"><span class="ql-icon">&#128274;</span> Captchas</a>
             <a href="logs.php" class="quick-link"><span class="ql-icon">&#128203;</span> Logs</a>
             <a href="online.php" class="quick-link"><span class="ql-icon">&#128994;</span> Connect&eacute;s</a>

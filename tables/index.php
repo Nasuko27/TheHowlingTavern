@@ -1,8 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
@@ -31,14 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_table'])) {
     $nom = trim($_POST['nom'] ?? '');
     if ($nom === '') {
         $_SESSION['tables_flash'] = ['type' => 'danger', 'msg' => 'Le nom ne peut pas être vide.'];
-        header('Location: tables.php?new=1');
+        header('Location: index.php?new=1');
         exit();
     }
     if (mb_strlen($nom) > 100) $nom = mb_substr($nom, 0, 100);
     $sid = (int)($_POST['id_systeme'] ?? 0);
     if (!$sid) {
         $_SESSION['tables_flash'] = ['type' => 'danger', 'msg' => 'Veuillez choisir un système de jeu.'];
-        header('Location: tables.php?new=1');
+        header('Location: index.php?new=1');
         exit();
     }
     $code = generate_invite_code($pdo);
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_table'])) {
         "INSERT INTO TABLE_MEMBRE (id_table, id_user, role) VALUES (:tid, :uid, 'mj')"
     )->execute([':tid' => $newId, ':uid' => $_SESSION['id']]);
     log_action('Tables', 'Creation #' . $newId);
-    header('Location: tablejeu.php?id=' . $newId);
+    header('Location: jeu.php?id=' . $newId);
     exit();
 }
 
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['join_table'])) {
     $code = strtoupper(trim($_POST['code_invite'] ?? ''));
     if (!preg_match('/^[A-Z2-9]{6}$/', $code)) {
         $_SESSION['tables_flash'] = ['type' => 'danger', 'msg' => 'Code invalide (6 caractères attendus).'];
-        header('Location: tables.php?join=1');
+        header('Location: index.php?join=1');
         exit();
     }
     $stmt = $pdo->prepare("SELECT id FROM TABLEDEJEU WHERE code_invite = :code");
@@ -66,21 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['join_table'])) {
     $table = $stmt->fetch();
     if (!$table) {
         $_SESSION['tables_flash'] = ['type' => 'danger', 'msg' => 'Aucune table trouvée avec ce code.'];
-        header('Location: tables.php?join=1');
+        header('Location: index.php?join=1');
         exit();
     }
     $tid = (int)$table['id'];
     $check = $pdo->prepare("SELECT 1 FROM TABLE_MEMBRE WHERE id_table = :tid AND id_user = :uid");
     $check->execute([':tid' => $tid, ':uid' => $_SESSION['id']]);
     if ($check->fetch()) {
-        header('Location: tablejeu.php?id=' . $tid);
+        header('Location: jeu.php?id=' . $tid);
         exit();
     }
     $pdo->prepare(
         "INSERT INTO TABLE_MEMBRE (id_table, id_user, role) VALUES (:tid, :uid, 'joueur')"
     )->execute([':tid' => $tid, ':uid' => $_SESSION['id']]);
     log_action('Tables', 'Rejoint #' . $tid);
-    header('Location: tablejeu.php?id=' . $tid);
+    header('Location: jeu.php?id=' . $tid);
     exit();
 }
 
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_table'])) {
             log_action('Tables', 'Suppression #' . $tid);
         }
     }
-    header('Location: tables.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -119,9 +119,9 @@ $showJoin = isset($_GET['join']);
 
 log_action('Tables', 'Liste');
 ?>
-<?php include __DIR__ . '/includes/header.php'; ?>
+<?php include __DIR__ . '/../includes/header.php'; ?>
 <body>
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
 <div class="forum-container">
 
@@ -134,8 +134,8 @@ log_action('Tables', 'Liste');
     <div class="forum-header">
         <h1>Mes Tables</h1>
         <div class="d-flex gap-2">
-            <a href="tables.php?new=1" class="btn-forum-new">Cr&eacute;er</a>
-            <a href="tables.php?join=1" class="btn-forum-new" style="background:#333;border-color:#555">Rejoindre</a>
+            <a href="index.php?new=1" class="btn-forum-new">Cr&eacute;er</a>
+            <a href="index.php?join=1" class="btn-forum-new" style="background:#333;border-color:#555">Rejoindre</a>
         </div>
     </div>
 
@@ -153,7 +153,7 @@ log_action('Tables', 'Liste');
             </select>
             <div class="d-flex gap-2">
                 <button type="submit" class="btn-forum-new">Cr&eacute;er</button>
-                <a href="tables.php" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
+                <a href="index.php" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
             </div>
         </form>
     </div>
@@ -167,7 +167,7 @@ log_action('Tables', 'Liste');
             <input type="text" name="code_invite" placeholder="Code d'invitation" maxlength="6" required>
             <div class="d-flex gap-2" style="margin-top:.5rem">
                 <button type="submit" class="btn-forum-new">Rejoindre</button>
-                <a href="tables.php" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
+                <a href="index.php" class="btn-forum-new" style="background:#333;border-color:#555">Annuler</a>
             </div>
         </form>
     </div>
@@ -179,14 +179,14 @@ log_action('Tables', 'Liste');
         <?php foreach ($tables as $t): ?>
         <?php
             $isMJ = (int)$t['id_maitrejeu'] === (int)$_SESSION['id'];
-            $mjAvSrc = $t['mj_avatar'] ? 'assets/img/avatars/' . htmlspecialchars($t['mj_avatar']) : 'assets/img/usrplaceholder.png';
+            $mjAvSrc = $t['mj_avatar'] ? '../assets/img/avatars/' . htmlspecialchars($t['mj_avatar']) : '../assets/img/usrplaceholder.png';
         ?>
         <div class="post-card">
             <div class="post-body">
-                <a href="tablejeu.php?id=<?= (int)$t['id'] ?>" class="post-title"><?= htmlspecialchars($t['nom']) ?></a>
+                <a href="jeu.php?id=<?= (int)$t['id'] ?>" class="post-title"><?= htmlspecialchars($t['nom']) ?></a>
                 <div class="post-meta">
-                    <a href="profile.php?id=<?= (int)$t['id_maitrejeu'] ?>"><img src="<?= $mjAvSrc ?>" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
-                    MJ : <strong><a href="profile.php?id=<?= (int)$t['id_maitrejeu'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($t['mj_login']) ?></a></strong>
+                    <a href="../compte/profil.php?id=<?= (int)$t['id_maitrejeu'] ?>"><img src="<?= $mjAvSrc ?>" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
+                    MJ : <strong><a href="../compte/profil.php?id=<?= (int)$t['id_maitrejeu'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($t['mj_login']) ?></a></strong>
                     &middot; <?= (int)$t['nb_membres'] ?> membre<?= $t['nb_membres'] > 1 ? 's' : '' ?>
                     <?php if ($t['date_creation']): ?>
                         &middot; <?= date('d/m/Y', strtotime($t['date_creation'])) ?>
@@ -213,4 +213,4 @@ log_action('Tables', 'Liste');
 </html>
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

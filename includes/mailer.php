@@ -72,7 +72,7 @@ function send_newsletter_mail(string $email, string $login, string $titre, strin
                 <hr style="border-color:#620D14;margin:1.5rem 0">
                 <p style="color:#888;font-size:.8rem;text-align:center">
                     Tu re&ccedil;ois cet e-mail car tu es membre de <strong>The Howling Tavern</strong>.<br>
-                    <a href="' . SITE_URL . '/newsletter_redirect.php?id=' . $article_id . '" style="color:#c0392b">Voir sur le site</a>
+                    <a href="' . SITE_URL . '/newsletter/redirect.php?id=' . $article_id . '" style="color:#c0392b">Voir sur le site</a>
                 </p>
             </div>
         ';

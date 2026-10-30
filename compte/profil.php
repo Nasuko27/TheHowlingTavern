@@ -1,9 +1,9 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/../includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/logger.php';
 
 $isAdmin  = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 $loggedIn = isset($_SESSION['id']);
@@ -24,15 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_avatar']) && $
         $allowed = ['image/jpeg' => '.jpg', 'image/png' => '.png'];
         $mime = mime_content_type($_FILES['avatar']['tmp_name']);
         if (isset($allowed[$mime]) && $_FILES['avatar']['size'] <= 2 * 1024 * 1024) {
-            $dir = __DIR__ . '/assets/img/avatars';
+            $dir = __DIR__ . '/../assets/img/avatars';
             if (!is_dir($dir)) mkdir($dir, 0755, true);
             $ext = $allowed[$mime];
             $filename = $id . $ext;
             $old = $pdo->prepare("SELECT avatar FROM USER WHERE id = :id");
             $old->execute([':id' => $id]);
             $oldAvatar = $old->fetchColumn();
-            if ($oldAvatar && file_exists(__DIR__ . '/assets/img/avatars/' . $oldAvatar)) {
-                unlink(__DIR__ . '/assets/img/avatars/' . $oldAvatar);
+            if ($oldAvatar && file_exists(__DIR__ . '/../assets/img/avatars/' . $oldAvatar)) {
+                unlink(__DIR__ . '/../assets/img/avatars/' . $oldAvatar);
             }
             if (move_uploaded_file($_FILES['avatar']['tmp_name'], $dir . '/' . $filename)) {
                 $pdo->prepare("UPDATE USER SET avatar = :a WHERE id = :id")
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_avatar']) && $
             }
         }
     }
-    header('Location: profile.php?id=' . $id);
+    header('Location: profil.php?id=' . $id);
     exit();
 }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_bio']) && $isO
     if (mb_strlen($bio) > 500) $bio = mb_substr($bio, 0, 500);
     $pdo->prepare("UPDATE USER SET bio = :b WHERE id = :id")
         ->execute([':b' => $bio, ':id' => $id]);
-    header('Location: profile.php?id=' . $id);
+    header('Location: profil.php?id=' . $id);
     exit();
 }
 
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_infos']) && $i
             $_SESSION['profile_flash'] = ['type' => 'success', 'msg' => 'Informations mises ? jour.'];
         }
     }
-    header('Location: profile.php?id=' . $id . '&settings=1');
+    header('Location: profil.php?id=' . $id . '&settings=1');
     exit();
 }
 
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_email']) && $i
             $_SESSION['email_change_code'] = $code;
             $_SESSION['email_change_new']  = $newEmail;
 
-            include_once __DIR__ . '/includes/mailer.php';
+            include_once __DIR__ . '/../includes/mailer.php';
             $result = send_verification_mail($newEmail, $_SESSION['login'], $code);
             if ($result === true) {
                 $_SESSION['profile_flash'] = ['type' => 'success', 'msg' => 'Code de v?rification envoy? ? ' . $newEmail];
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_email']) && $i
             }
         }
     }
-    header('Location: profile.php?id=' . $id . '&settings=1');
+    header('Location: profil.php?id=' . $id . '&settings=1');
     exit();
 }
 
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_email']) && $i
     } else {
         $_SESSION['profile_flash'] = ['type' => 'danger', 'msg' => 'Code incorrect.'];
     }
-    header('Location: profile.php?id=' . $id . '&settings=1');
+    header('Location: profil.php?id=' . $id . '&settings=1');
     exit();
 }
 
@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password']) &&
             ->execute([':m' => password_hash($new, PASSWORD_DEFAULT), ':id' => $id]);
         $_SESSION['profile_flash'] = ['type' => 'success', 'msg' => 'Mot de passe mis ? jour.'];
     }
-    header('Location: profile.php?id=' . $id . '&settings=1');
+    header('Location: profil.php?id=' . $id . '&settings=1');
     exit();
 }
 
@@ -153,14 +153,14 @@ try {
 }
 
 if (!$user) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 
 if (!isset($user['bio']))    $user['bio']    = null;
 if (!isset($user['avatar'])) $user['avatar'] = null;
 
-$avatarSrc = $user['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($user['avatar']) : 'assets/img/usrplaceholder.png';
+$avatarSrc = $user['avatar'] ? '../assets/img/avatars/' . htmlspecialchars($user['avatar']) : '../assets/img/usrplaceholder.png';
 
 $postCount = 0;
 $commentCount = 0;
@@ -178,9 +178,9 @@ $showSettings = isset($_GET['settings']) && $isOwner;
 
 log_action('Profil', 'Modification #' . $id);
 ?>
-<?php include __DIR__ . '/includes/header.php'; ?>
+<?php include __DIR__ . '/../includes/header.php'; ?>
 <body>
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
 <div class="forum-container" style="max-width:700px">
 
@@ -217,7 +217,7 @@ log_action('Profil', 'Modification #' . $id);
                     <span style="background:#bc2626;padding:2px 8px;border-radius:4px;color:#fff;font-size:.75rem;font-family:'New Rocker',system-ui">Banni</span>
                 <?php endif; ?>
                 <?php if ($isAdmin && !$isOwner): ?>
-                    <a href="admin/edituser.php?id=<?= (int)$user['id'] ?>" class="btn-forum-new" style="font-size:.7rem;padding:.2rem .6rem;margin-left:.5rem;vertical-align:middle">Configurer</a>
+                    <a href="../admin/edituser.php?id=<?= (int)$user['id'] ?>" class="btn-forum-new" style="font-size:.7rem;padding:.2rem .6rem;margin-left:.5rem;vertical-align:middle">Configurer</a>
                 <?php endif; ?>
 
                 <div style="margin-top:1rem;color:#ccc;font-size:.92rem;line-height:1.6">
@@ -229,7 +229,7 @@ log_action('Profil', 'Modification #' . $id);
                         ><?= htmlspecialchars($user['bio'] ?? '') ?></textarea>
                         <div class="d-flex gap-2 mt-2">
                             <button type="submit" class="btn-forum-new" style="font-size:.8rem;padding:.3rem .8rem">Sauvegarder</button>
-                            <a href="profile.php?id=<?= $id ?>" class="btn-forum-new" style="font-size:.8rem;padding:.3rem .8rem;background:#333;border-color:#555">Annuler</a>
+                            <a href="profil.php?id=<?= $id ?>" class="btn-forum-new" style="font-size:.8rem;padding:.3rem .8rem;background:#333;border-color:#555">Annuler</a>
                         </div>
                     </form>
                     <?php else: ?>
@@ -240,8 +240,8 @@ log_action('Profil', 'Modification #' . $id);
                         <?php endif; ?>
                         <?php if ($isOwner): ?>
                         <div class="d-flex gap-3 mt-2">
-                            <a href="profile.php?id=<?= $id ?>&edit_bio=1" style="color:#e8a87c;font-size:.8rem;text-decoration:none"><?= empty($user['bio']) ? 'Ajouter une bio' : 'Modifier la bio' ?></a>
-                            <a href="profile.php?id=<?= $id ?>&settings=1" style="color:#e8a87c;font-size:.8rem;text-decoration:none">Param&egrave;tres</a>
+                            <a href="profil.php?id=<?= $id ?>&edit_bio=1" style="color:#e8a87c;font-size:.8rem;text-decoration:none"><?= empty($user['bio']) ? 'Ajouter une bio' : 'Modifier la bio' ?></a>
+                            <a href="profil.php?id=<?= $id ?>&settings=1" style="color:#e8a87c;font-size:.8rem;text-decoration:none">Param&egrave;tres</a>
                         </div>
                         <?php endif; ?>
                     <?php endif; ?>
@@ -309,7 +309,7 @@ log_action('Profil', 'Modification #' . $id);
     </div>
 
     <p style="text-align:center;margin-bottom:2rem">
-        <a href="profile.php?id=<?= $id ?>" class="btn-forum-new" style="background:#333;border-color:#555">&larr; Retour au profil</a>
+        <a href="profil.php?id=<?= $id ?>" class="btn-forum-new" style="background:#333;border-color:#555">&larr; Retour au profil</a>
     </p>
 
     <?php else: ?>
@@ -333,4 +333,4 @@ log_action('Profil', 'Modification #' . $id);
 </div>
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>

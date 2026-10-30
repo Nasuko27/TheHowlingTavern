@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/../includes/config.php';
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -8,7 +8,7 @@ $error   = "";
 $success = "";
 
 if (!isset($_SESSION['pending_email'])) {
-    header('Location: createuser.php');
+    header('Location: inscription.php');
     exit();
 }
 
@@ -43,20 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['login']  = $user['login'];
             $_SESSION['status'] = $user['status'];
 
-            header('Location: index.php');
+            header('Location: ../index.php');
             exit();
         }
     }
 }
 
-include_once __DIR__ . '/includes/header.php';
+include_once __DIR__ . '/../includes/header.php';
 log_action('Vérification de compte');
 ?>
 <body>
 
-<?php include __DIR__ . '/includes/nav.php'; ?>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
-<div class="centered-popup" style="background-image: url(assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
+<div class="centered-popup" style="background-image: url(../assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
     <div class="popup p-5">
         <h1 class="display-1 text-center">Vérification du compte</h1>
 
@@ -87,7 +87,7 @@ log_action('Vérification de compte');
                 </p>
             <?php endif; ?>
 
-            <form action="verify_code.php" method="POST" class="px-5 mt-4">
+            <form action="verification.php" method="POST" class="px-5 mt-4">
                 <div class="mb-3">
                     <label for="code" class="form-label">Code de vérification</label>
                     <input type="text" class="form-control text-center fs-3 fw-bold"
@@ -100,7 +100,7 @@ log_action('Vérification de compte');
                 <?php endif; ?>
 
                 <div class="d-flex justify-content-between pt-2">
-                    <a href="createuser.php" class="btn">Retour</a>
+                    <a href="inscription.php" class="btn">Retour</a>
                     <button type="submit" class="btn btn-primary">Vérifier</button>
                 </div>
             </form>

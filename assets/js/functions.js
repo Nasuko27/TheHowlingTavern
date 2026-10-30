@@ -1,6 +1,6 @@
 async function bonusRacial() {
     const race_id = document.getElementById('race').value;
-    const response = await fetch('api/bonusRacial.php?race=' + race_id);
+    const response = await fetch('../api/bonusRacial.php?race=' + race_id);
     const bonus_racial = await response.json();
     const carac = ['FOR','DEX','CON','INT','SAG','CHA'];
     for (const car of carac) {
@@ -17,7 +17,7 @@ async function bonusRacial() {
 
 async function classedata() {
     const class_id = document.getElementById('classe').value;
-    const response = await fetch('api/dedevie.php?classe=' + class_id);
+    const response = await fetch('../api/dedevie.php?classe=' + class_id);
     const classe = await response.json();
     document.getElementById('ddv').value = `${classe.dedevie}`;
     if (`${classe.caracmagie}` === 'null') document.getElementById('caracmagie').value = 'Aucune';
@@ -31,14 +31,14 @@ async function addItemList(type,systeme){
     let nb = localStorage.getItem("nb");
     localStorage.setItem("nb", (parseInt(nb) + 1).toString());
 
-    const response = await fetch('api/fetchItems.php?type=' + type + '&systeme=' + systeme + "&nb=" + nb);
+    const response = await fetch('../api/fetchItems.php?type=' + type + '&systeme=' + systeme + "&nb=" + nb);
     let body = await response.text();
 
     target.insertAdjacentHTML('beforebegin', body);
 
     let id = document.getElementById(type + nb);
     id.addEventListener('change', async function() {
-        const response2 = await fetch('api/fetchItem.php?type=' + type + '&systeme=' + systeme + "&id=" + id.value);
+        const response2 = await fetch('../api/fetchItem.php?type=' + type + '&systeme=' + systeme + "&id=" + id.value);
         let result = await response2.json();
 
         if(type === "arme") document.getElementById("DM" + nb).value = `${result.degat}`;

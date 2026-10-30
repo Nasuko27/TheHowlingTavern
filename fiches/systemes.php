@@ -1,11 +1,11 @@
 <?php
 ob_start();
-include_once __DIR__ . '/includes/protect_verified.php';
-include_once __DIR__ . '/includes/logger.php';
+include_once __DIR__ . '/../includes/protect_verified.php';
+include_once __DIR__ . '/../includes/logger.php';
 log_action('Création FDP');
 
-include __DIR__ . '/includes/header.php';
-include __DIR__ . '/includes/nav.php';
+include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/nav.php';
 
 $flash = null;
 if (isset($_SESSION['systeme_flash'])) {
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isAdmin) {
             $_SESSION['systeme_flash'] = ['type' => 'success', 'msg' => 'Système modifié.'];
         }
     }
-    header('Location: systemeFiche.php');
+    header('Location: systemes.php');
     exit();
 }
 
@@ -75,7 +75,7 @@ $systemes = $stmt->fetchAll();
         <textarea name="description" rows="2"><?= htmlspecialchars($systeme['description']) ?></textarea>
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-sm" style="background:#26bc26;color:#fff;border:none;font-family:'New Rocker',system-ui">Sauvegarder</button>
-            <a href="systemeFiche.php" class="btn btn-sm" style="background:#333;color:#fff;border:none;font-family:'New Rocker',system-ui">Annuler</a>
+            <a href="systemes.php" class="btn btn-sm" style="background:#333;color:#fff;border:none;font-family:'New Rocker',system-ui">Annuler</a>
         </div>
     </form>
     <?php else: ?>
@@ -86,14 +86,14 @@ $systemes = $stmt->fetchAll();
         </div>
         <div class="d-flex gap-2 align-items-center">
             <?php if ($isAdmin): ?>
-                <a href="systemeFiche.php?edit=<?= (int)$systeme['id'] ?>" class="btn btn-sm" style="background:#e67e22;color:#fff;border:none;font-family:'New Rocker',system-ui;white-space:nowrap">Modifier</a>
+                <a href="systemes.php?edit=<?= (int)$systeme['id'] ?>" class="btn btn-sm" style="background:#e67e22;color:#fff;border:none;font-family:'New Rocker',system-ui;white-space:nowrap">Modifier</a>
                 <form method="POST" style="display:inline" onsubmit="return confirm('Supprimer ce système ?')">
                     <input type="hidden" name="delete_systeme" value="1">
                     <input type="hidden" name="id_systeme" value="<?= (int)$systeme['id'] ?>">
                     <button type="submit" class="btn btn-sm" style="background:#bc2626;color:#fff;border:none;font-family:'New Rocker',system-ui;white-space:nowrap">Supprimer</button>
                 </form>
             <?php endif; ?>
-            <a href="createfdp.php?systeme=<?= (int)$systeme['id'] ?>" class="btn btn-sm" style="background:#26bc26;color:#fff;border:none;font-family:'New Rocker',system-ui;white-space:nowrap">Choisir</a>
+            <a href="creer.php?systeme=<?= (int)$systeme['id'] ?>" class="btn btn-sm" style="background:#26bc26;color:#fff;border:none;font-family:'New Rocker',system-ui;white-space:nowrap">Choisir</a>
         </div>
     </div>
     <?php endif; ?>
@@ -118,4 +118,4 @@ $systemes = $stmt->fetchAll();
 
 
 <?php 
-include __DIR__ . '/includes/footer.php'; ?>
+include __DIR__ . '/../includes/footer.php'; ?>
