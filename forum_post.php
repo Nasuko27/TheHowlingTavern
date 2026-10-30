@@ -1,8 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) { header('Location: forum.php'); exit(); }
@@ -172,12 +172,12 @@ function time_ago($dt = '') {
     <link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="icon" type="image/png" href="img/logo.png">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
+    <link href="assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
 
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="forum-container">
 
@@ -200,7 +200,7 @@ function time_ago($dt = '') {
     <div class="post-full">
         <div class="post-full-title"><?= htmlspecialchars($post['nom']) ?></div>
         <div class="post-meta" style="font-size:.8rem;color:#888">
-            <?php $postAvSrc = $post['avatar'] ? 'img/avatars/' . htmlspecialchars($post['avatar']) : 'img/usrplaceholder.png'; ?>
+            <?php $postAvSrc = $post['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($post['avatar']) : 'assets/img/usrplaceholder.png'; ?>
             <a href="profile.php?id=<?= (int)$post['id_user'] ?>"><img src="<?= $postAvSrc ?>" alt="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.3rem"></a>
             Post&eacute; par <strong><a href="profile.php?id=<?= (int)$post['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($post['login']) ?></a></strong>
             &middot; <?= time_ago($post['datecreation']) ?>
@@ -250,7 +250,7 @@ function time_ago($dt = '') {
             <?php foreach ($messages as $m): ?>
             <div class="comment-card">
                 <div class="comment-author">
-                    <?php $mAvSrc = $m['avatar'] ? 'img/avatars/' . htmlspecialchars($m['avatar']) : 'img/usrplaceholder.png'; ?>
+                    <?php $mAvSrc = $m['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($m['avatar']) : 'assets/img/usrplaceholder.png'; ?>
                     <a href="profile.php?id=<?= (int)$m['id_user'] ?>"><img src="<?= $mAvSrc ?>" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
                     <a href="profile.php?id=<?= (int)$m['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($m['login']) ?></a>
                     <span style="color:#666;font-weight:normal"> . <?= time_ago($m['dateposte']) ?></span>
@@ -279,4 +279,4 @@ function time_ago($dt = '') {
 
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

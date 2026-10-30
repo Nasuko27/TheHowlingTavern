@@ -1,13 +1,13 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'config.php';
+include_once __DIR__ . '/includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once 'logger.php';
+include_once __DIR__ . '/includes/logger.php';
 
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
-include_once 'mailer.php';
+include_once __DIR__ . '/includes/mailer.php';
 $standbys = $pdo->query(
     "SELECT * FROM NEWSLETTER WHERE statut = 'standby' AND date_soumise <= NOW() - INTERVAL 6 HOUR"
 )->fetchAll();
@@ -136,9 +136,9 @@ log_action('Newsletter', 'Lecture');
 
 $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
 ?>
-<?php include 'header.php'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 <body>
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="forum-container">
 
@@ -226,7 +226,7 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
                     <?php endif; ?>
                 </div>
                 <div class="nl-meta">
-                    <?php $aSrc = $a['avatar'] ? 'img/avatars/' . htmlspecialchars($a['avatar']) : 'img/usrplaceholder.png'; ?>
+                    <?php $aSrc = $a['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($a['avatar']) : 'assets/img/usrplaceholder.png'; ?>
                     <a href="profile.php?id=<?= (int)$a['id_admin'] ?>"><img src="<?= $aSrc ?>" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.3rem"></a>
                     Par <strong><a href="profile.php?id=<?= (int)$a['id_admin'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($a['login']) ?></a></strong>
                     <?php if ($a['statut'] === 'published' && $a['date_pub']): ?>
@@ -256,4 +256,4 @@ $showForm = isset($_GET['new']) && $isAdmin && !$edit_article;
 </div>
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

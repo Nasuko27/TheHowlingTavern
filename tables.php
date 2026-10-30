@@ -1,8 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
@@ -119,9 +119,9 @@ $showJoin = isset($_GET['join']);
 
 log_action('Tables', 'Liste');
 ?>
-<?php include 'header.php'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 <body>
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="forum-container">
 
@@ -179,7 +179,7 @@ log_action('Tables', 'Liste');
         <?php foreach ($tables as $t): ?>
         <?php
             $isMJ = (int)$t['id_maitrejeu'] === (int)$_SESSION['id'];
-            $mjAvSrc = $t['mj_avatar'] ? 'img/avatars/' . htmlspecialchars($t['mj_avatar']) : 'img/usrplaceholder.png';
+            $mjAvSrc = $t['mj_avatar'] ? 'assets/img/avatars/' . htmlspecialchars($t['mj_avatar']) : 'assets/img/usrplaceholder.png';
         ?>
         <div class="post-card">
             <div class="post-body">
@@ -213,4 +213,4 @@ log_action('Tables', 'Liste');
 </html>
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

@@ -1,6 +1,6 @@
 <?php
-include_once 'protect_verified.php';
-include_once 'config.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 $id = (int)($_GET['id'] ?? 0);
@@ -63,8 +63,8 @@ $pdf->Cell(0, 10, 'FEUILLE DE PERSONNAGE', 0, 1, 'C');
 $pdf->Ln(2);
 
 $portrait = '';
-if (file_exists(__DIR__ . '/img/fiches/' . $id . '.jpg')) $portrait = __DIR__ . '/img/fiches/' . $id . '.jpg';
-elseif (file_exists(__DIR__ . '/img/fiches/' . $id . '.png')) $portrait = __DIR__ . '/img/fiches/' . $id . '.png';
+if (file_exists(__DIR__ . '/assets/img/fiches/' . $id . '.jpg')) $portrait = __DIR__ . '/assets/img/fiches/' . $id . '.jpg';
+elseif (file_exists(__DIR__ . '/assets/img/fiches/' . $id . '.png')) $portrait = __DIR__ . '/assets/img/fiches/' . $id . '.png';
 if ($portrait) {
     $pdf->Image($portrait, 10, $pdf->GetY(), 40, 50, '', '', '', true, 150, '', false, false, 1);
 }

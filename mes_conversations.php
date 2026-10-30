@@ -1,8 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vote'])) {
     $pid  = (int)($_POST['post_id'] ?? 0);
@@ -104,12 +104,12 @@ function time_ago($dt = '') {
     <link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="icon" type="image/png" href="img/logo.png">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
+    <link href="assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
 
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="forum-container">
 
@@ -179,4 +179,4 @@ function time_ago($dt = '') {
 </div>
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

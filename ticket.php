@@ -1,8 +1,8 @@
 <?php
 ob_start();
-include_once 'config.php';
+include_once __DIR__ . '/includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once 'logger.php';
+include_once __DIR__ . '/includes/logger.php';
 log_action('Ticket', 'Formulaire');
 
 $flash = null;
@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['envoyer_ticket'])) {
     exit();
 }
 
-include 'header.php';
-include 'nav.php';
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/nav.php';
 ?>
 
 <div class="forum-container" style="max-width:700px">
@@ -50,4 +50,4 @@ include 'nav.php';
 
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

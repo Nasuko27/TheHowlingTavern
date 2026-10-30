@@ -1,11 +1,11 @@
 <?php
 ob_start();
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 log_action('Création FDP');
 
-include 'header.php';
-include 'nav.php';
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/nav.php';
 
 $flash = null;
 if (isset($_SESSION['systeme_flash'])) {
@@ -118,4 +118,4 @@ $systemes = $stmt->fetchAll();
 
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

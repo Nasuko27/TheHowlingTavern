@@ -1,11 +1,11 @@
 <?php
 
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 log_action('Création FDP');
 
-include 'header.php';
-include 'nav.php';
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/nav.php';
 
 if (!isset($_GET['systeme'])) {
     header('location: systemeFiche.php');
@@ -33,7 +33,7 @@ $stmt->execute();
 $classes = $stmt->fetchAll();
 
 ?>
-<script src="functions.js"></script>
+<script src="assets/js/functions.js"></script>
 <body class="container-fluid">
 <form class="comphero d-flex flex-column align-items-center gap-5 p-4 m-4" method="post"
       action="laFinaliteDeTouteUneVie.php">

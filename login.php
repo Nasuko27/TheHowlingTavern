@@ -1,6 +1,6 @@
 <?php
-include_once "config.php";
-include_once "header.php" ;
+include_once __DIR__ . '/includes/config.php';
+include_once __DIR__ . '/includes/header.php';
 
 $sql = "SELECT chemin FROM CAPCHAT ORDER BY id ASC";
 $stmt = $pdo->query($sql);
@@ -15,7 +15,7 @@ if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
     $stmt->execute();
     $session = $stmt->fetch();
     if($_SESSION['login'] === $session['login'] && $_SESSION['status'] === 1) {
-        header('Location: admin.php');
+        header('Location: admin/index.php');
         exit();
     } else {
         header('Location: index.php');
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['id'] = $user['id'];
                         $_SESSION['status'] = $user['status'];
                         if ($_SESSION['status'] === 1) {
-                            header('Location: admin.php');
+                            header('Location: admin/index.php');
                             exit();
                         } else {
                             header('Location: index.php');
@@ -78,10 +78,10 @@ log_action('Connexion');
 
 <body style="font-family: 'New Rocker', system-ui;">
 
-<script src="captcha.js"></script>
-<?php include "nav.php"; ?>
+<script src="assets/js/captcha.js"></script>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
-<div class="centered-popup" style="background-image: url(img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
+<div class="centered-popup" style="background-image: url(assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
     <div class="popup">
         <h1 class="display-1 text-center">Connexion</h1>
         <form action="login.php" method="POST" class="px-5">

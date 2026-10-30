@@ -1,8 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 
 $isAdmin = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 
@@ -273,9 +273,9 @@ function time_ago_table($dt) {
 
 log_action('Tables', 'Vue #' . $id);
 ?>
-<?php include 'header.php'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 <body>
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="table-container">
 
@@ -308,7 +308,7 @@ log_action('Tables', 'Vue #' . $id);
             <div class="form-card">
                 <h2 style="font-size:1.1rem">Membres</h2>
                 <?php foreach ($members as $m): ?>
-                <?php $mAvSrc = $m['avatar'] ? 'img/avatars/' . htmlspecialchars($m['avatar']) : 'img/usrplaceholder.png'; ?>
+                <?php $mAvSrc = $m['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($m['avatar']) : 'assets/img/usrplaceholder.png'; ?>
                 <div class="member-card">
                     <a href="profile.php?id=<?= (int)$m['id'] ?>">
                         <img src="<?= $mAvSrc ?>" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
@@ -349,9 +349,9 @@ log_action('Tables', 'Vue #' . $id);
             <?php if (!empty($fichesToShow)): ?>
             <?php foreach ($fichesToShow as $f):
                 $canEdit = $isMJ;
-                $portrait = 'img/usrplaceholder.png';
-                if (file_exists(__DIR__ . '/img/fiches/' . $f['id'] . '.jpg')) $portrait = 'img/fiches/' . $f['id'] . '.jpg';
-                elseif (file_exists(__DIR__ . '/img/fiches/' . $f['id'] . '.png')) $portrait = 'img/fiches/' . $f['id'] . '.png';
+                $portrait = 'assets/img/usrplaceholder.png';
+                if (file_exists(__DIR__ . '/assets/img/fiches/' . $f['id'] . '.jpg')) $portrait = 'assets/img/fiches/' . $f['id'] . '.jpg';
+                elseif (file_exists(__DIR__ . '/assets/img/fiches/' . $f['id'] . '.png')) $portrait = 'assets/img/fiches/' . $f['id'] . '.png';
                 $fmtMod = function($v) { return ($v >= 0 ? '+' : '') . $v; };
             ?>
             <form method="POST" action="fiche_update.php" class="fiche-sheet" style="margin-bottom:1rem">
@@ -535,7 +535,7 @@ log_action('Tables', 'Vue #' . $id);
             <div class="form-card" style="padding:0;display:flex;flex-direction:column">
                 <div id="chat-box" style="height:500px;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.4rem">
                     <?php foreach ($messages as $m): ?>
-                    <?php $cAvSrc = $m['avatar'] ? 'img/avatars/' . htmlspecialchars($m['avatar']) : 'img/usrplaceholder.png'; ?>
+                    <?php $cAvSrc = $m['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($m['avatar']) : 'assets/img/usrplaceholder.png'; ?>
                     <div class="comment-card" style="margin-bottom:0" data-msg-id="<?= (int)$m['id'] ?>">
                         <div class="comment-author">
                             <img src="<?= $cAvSrc ?>" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem">
@@ -575,7 +575,7 @@ chatForm.addEventListener('submit', function(e) {
     var msg = chatInput.value.trim();
     if (!msg) return;
     chatInput.value = '';
-    fetch('table_send.php', {
+    fetch('api/table_send.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'id_table=' + tableId + '&contenu=' + encodeURIComponent(msg)
@@ -587,7 +587,7 @@ chatForm.addEventListener('submit', function(e) {
 function pollChat() {
     var visible = [];
     chatBox.querySelectorAll('[data-msg-id]').forEach(function(el) { visible.push(el.dataset.msgId); });
-    fetch('table_poll.php?id_table=' + tableId + '&after=' + lastMsgId + '&visible=' + visible.join(','))
+    fetch('api/table_poll.php?id_table=' + tableId + '&after=' + lastMsgId + '&visible=' + visible.join(','))
         .then(function(r) {
             if (r.status === 401) { window.location = 'login.php'; return; }
             return r.json();
@@ -628,7 +628,7 @@ var myUid = <?= (int)$_SESSION['id'] ?>;
 
 function deleteMsg(msgId, btn) {
     if (!confirm('Supprimer ce message ?')) return;
-    fetch('table_delete_msg.php', {
+    fetch('api/table_delete_msg.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'id_msg=' + msgId
@@ -650,4 +650,4 @@ setInterval(function() {
 </script>
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

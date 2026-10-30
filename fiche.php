@@ -1,7 +1,7 @@
 <?php
 ob_start();
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) { header('Location: mes_fiches.php'); exit(); }
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_portrait']) &&
         $allowed = ['image/jpeg' => '.jpg', 'image/png' => '.png'];
         $mime = mime_content_type($_FILES['portrait']['tmp_name']);
         if (isset($allowed[$mime]) && $_FILES['portrait']['size'] <= 2 * 1024 * 1024) {
-            $dir = __DIR__ . '/img/fiches';
+            $dir = __DIR__ . '/assets/img/fiches';
             if (!is_dir($dir)) mkdir($dir, 0755, true);
             $ext = $allowed[$mime];
             foreach (['.jpg', '.png'] as $old) {
@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_portrait']) &&
 
 log_action('Fiche', 'Vue #' . $id);
 
-include 'header.php';
-include 'nav.php';
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/nav.php';
 ?>
 
 <div class="forum-container" style="max-width:1000px">
@@ -124,9 +124,9 @@ include 'nav.php';
         <div class="fiche-top">
             <div class="fiche-portrait">
                 <?php
-                $portrait = 'img/usrplaceholder.png';
-                if (file_exists(__DIR__ . '/img/fiches/' . $id . '.jpg')) $portrait = 'img/fiches/' . $id . '.jpg';
-                elseif (file_exists(__DIR__ . '/img/fiches/' . $id . '.png')) $portrait = 'img/fiches/' . $id . '.png';
+                $portrait = 'assets/img/usrplaceholder.png';
+                if (file_exists(__DIR__ . '/assets/img/fiches/' . $id . '.jpg')) $portrait = 'assets/img/fiches/' . $id . '.jpg';
+                elseif (file_exists(__DIR__ . '/assets/img/fiches/' . $id . '.png')) $portrait = 'assets/img/fiches/' . $id . '.png';
                 ?>
                 <img src="<?= $portrait ?>" alt="">
                 <?php if ($isOwner && !$editMode): ?>
@@ -258,4 +258,4 @@ include 'nav.php';
 
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

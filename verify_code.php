@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include_once 'config.php';
+include_once __DIR__ . '/includes/config.php';
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -49,14 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include_once 'header.php';
+include_once __DIR__ . '/includes/header.php';
 log_action('Vérification de compte');
 ?>
 <body>
 
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
-<div class="centered-popup" style="background-image: url(img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
+<div class="centered-popup" style="background-image: url(assets/img/background.jpg); background-size: 100% 100%; font-family: 'New Rocker', system-ui; background-attachment: fixed;">
     <div class="popup p-5">
         <h1 class="display-1 text-center">Vérification du compte</h1>
 

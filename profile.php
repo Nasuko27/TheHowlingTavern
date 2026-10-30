@@ -1,9 +1,9 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'config.php';
+include_once __DIR__ . '/includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once 'logger.php';
+include_once __DIR__ . '/includes/logger.php';
 
 $isAdmin  = isset($_SESSION['status']) && (string)$_SESSION['status'] === '1';
 $loggedIn = isset($_SESSION['id']);
@@ -24,15 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_avatar']) && $
         $allowed = ['image/jpeg' => '.jpg', 'image/png' => '.png'];
         $mime = mime_content_type($_FILES['avatar']['tmp_name']);
         if (isset($allowed[$mime]) && $_FILES['avatar']['size'] <= 2 * 1024 * 1024) {
-            $dir = __DIR__ . '/img/avatars';
+            $dir = __DIR__ . '/assets/img/avatars';
             if (!is_dir($dir)) mkdir($dir, 0755, true);
             $ext = $allowed[$mime];
             $filename = $id . $ext;
             $old = $pdo->prepare("SELECT avatar FROM USER WHERE id = :id");
             $old->execute([':id' => $id]);
             $oldAvatar = $old->fetchColumn();
-            if ($oldAvatar && file_exists(__DIR__ . '/img/avatars/' . $oldAvatar)) {
-                unlink(__DIR__ . '/img/avatars/' . $oldAvatar);
+            if ($oldAvatar && file_exists(__DIR__ . '/assets/img/avatars/' . $oldAvatar)) {
+                unlink(__DIR__ . '/assets/img/avatars/' . $oldAvatar);
             }
             if (move_uploaded_file($_FILES['avatar']['tmp_name'], $dir . '/' . $filename)) {
                 $pdo->prepare("UPDATE USER SET avatar = :a WHERE id = :id")
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_email']) && $i
             $_SESSION['email_change_code'] = $code;
             $_SESSION['email_change_new']  = $newEmail;
 
-            include_once 'mailer.php';
+            include_once __DIR__ . '/includes/mailer.php';
             $result = send_verification_mail($newEmail, $_SESSION['login'], $code);
             if ($result === true) {
                 $_SESSION['profile_flash'] = ['type' => 'success', 'msg' => 'Code de v?rification envoy? ? ' . $newEmail];
@@ -160,7 +160,7 @@ if (!$user) {
 if (!isset($user['bio']))    $user['bio']    = null;
 if (!isset($user['avatar'])) $user['avatar'] = null;
 
-$avatarSrc = $user['avatar'] ? 'img/avatars/' . htmlspecialchars($user['avatar']) : 'img/usrplaceholder.png';
+$avatarSrc = $user['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($user['avatar']) : 'assets/img/usrplaceholder.png';
 
 $postCount = 0;
 $commentCount = 0;
@@ -178,9 +178,9 @@ $showSettings = isset($_GET['settings']) && $isOwner;
 
 log_action('Profil', 'Modification #' . $id);
 ?>
-<?php include 'header.php'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 <body>
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="forum-container" style="max-width:700px">
 
@@ -217,7 +217,7 @@ log_action('Profil', 'Modification #' . $id);
                     <span style="background:#bc2626;padding:2px 8px;border-radius:4px;color:#fff;font-size:.75rem;font-family:'New Rocker',system-ui">Banni</span>
                 <?php endif; ?>
                 <?php if ($isAdmin && !$isOwner): ?>
-                    <a href="edituser.php?id=<?= (int)$user['id'] ?>" class="btn-forum-new" style="font-size:.7rem;padding:.2rem .6rem;margin-left:.5rem;vertical-align:middle">Configurer</a>
+                    <a href="admin/edituser.php?id=<?= (int)$user['id'] ?>" class="btn-forum-new" style="font-size:.7rem;padding:.2rem .6rem;margin-left:.5rem;vertical-align:middle">Configurer</a>
                 <?php endif; ?>
 
                 <div style="margin-top:1rem;color:#ccc;font-size:.92rem;line-height:1.6">
@@ -333,4 +333,4 @@ log_action('Profil', 'Modification #' . $id);
 </div>
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

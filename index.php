@@ -1,6 +1,6 @@
 <?php
 
-include "header.php";
+include __DIR__ . '/includes/header.php';
 
 log_action('Visite');
 
@@ -8,14 +8,14 @@ log_action('Visite');
 <body class="gap-3" style="margin-top: 20px;">
 
 <?php
-include "nav.php";
+include __DIR__ . '/includes/nav.php';
 ?>
 
    
     
 <div class="comphero d-inline-flex gap-5 py-4 px-5 mb-5 mx-5">
     <div class="col d-flex flex-column justify-content-center">
-        <img src="img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
+        <img src="assets/img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
     </div>
     <div class="col d-flex flex-column justify-content-center gap-4">
         <h2 class="text-light">C'est ici que démarre ta prochaine aventure</h2>
@@ -45,13 +45,13 @@ include "nav.php";
         </div>
     </div>
     <div class="col d-flex flex-column justify-content-center">
-        <img src="img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
+        <img src="assets/img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
     </div>
 </div>
 
 <div class="comphero d-inline-flex gap-5 py-4 px-5 mb-5 mx-5">
     <div class="col d-flex flex-column justify-content-center">
-        <img src="img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
+        <img src="assets/img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
     </div>
     <div class="col d-flex flex-column justify-content-center gap-4">
         <h2 class="text-light">L'aventure se passe rarement seul</h2>
@@ -69,7 +69,7 @@ include "nav.php";
 
 <div class="comphero d-inline-flex gap-5 py-4 px-5 mb-5 mx-5">
     <div class="col d-flex flex-column justify-content-center">
-        <img src="img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
+        <img src="assets/img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
     </div>
     <div class="col d-flex flex-column justify-content-center gap-4">
         <h2 class="text-light">Au delà du jeu de rôle</h2>
@@ -100,10 +100,10 @@ include "nav.php";
         </div>
     </div>
     <div class="col d-flex flex-column justify-content-center">
-        <img src="img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
+        <img src="assets/img/fdpcollage.png" alt="" class="img-fluid object-fit-fill"/>
     </div>
 </div>
 
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

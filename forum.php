@@ -1,8 +1,8 @@
 <?php
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
-include_once 'protect_verified.php';
-include_once 'logger.php';
+include_once __DIR__ . '/includes/protect_verified.php';
+include_once __DIR__ . '/includes/logger.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_post'])) {
     $titre   = trim($_POST['titre']   ?? '');
@@ -113,12 +113,12 @@ $showForm = isset($_GET['new']);
     <link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="icon" type="image/png" href="img/logo.png">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
+    <link href="assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
 
-<?php include 'nav.php'; ?>
+<?php include __DIR__ . '/includes/nav.php'; ?>
 
 <div class="forum-container">
 
@@ -173,7 +173,7 @@ $showForm = isset($_GET['new']);
                     <?= htmlspecialchars($p['nom']) ?>
                 </a>
                 <div class="post-meta">
-                    <?php $pAvSrc = $p['avatar'] ? 'img/avatars/' . htmlspecialchars($p['avatar']) : 'img/usrplaceholder.png'; ?>
+                    <?php $pAvSrc = $p['avatar'] ? 'assets/img/avatars/' . htmlspecialchars($p['avatar']) : 'assets/img/usrplaceholder.png'; ?>
                     <a href="profile.php?id=<?= (int)$p['id_user'] ?>"><img src="<?= $pAvSrc ?>" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.2rem"></a>
                     Post&eacute; par <strong><a href="profile.php?id=<?= (int)$p['id_user'] ?>" style="color:#e8a87c;text-decoration:none"><?= htmlspecialchars($p['login']) ?></a></strong>
                     &middot; <?= time_ago($p['datecreation']) ?>
@@ -201,4 +201,4 @@ $showForm = isset($_GET['new']);
 </div>
 
 <?php 
-include "footer.php"; ?>
+include __DIR__ . '/includes/footer.php'; ?>

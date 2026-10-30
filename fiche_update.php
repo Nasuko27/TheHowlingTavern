@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include_once 'config.php';
+include_once __DIR__ . '/includes/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (!isset($_SESSION['id']) || $_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['save_fiche'])) {
